@@ -1,0 +1,1 @@
+/Users/asmadsen/src/github.com/asmadsen/opencode-node-package-manager/dist/index.mjs
