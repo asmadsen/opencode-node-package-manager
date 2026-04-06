@@ -1,6 +1,6 @@
 {
-  "name": "opencode-plugin-package-manager",
-  "version": "1.0.0",
+  "name": "@asmadsen/opencode-node-package-manager",
+  "version": "0.1.0",
   "description": "Opencode plugin that intercepts package manager commands and rewrites them to use the correct package manager",
   "type": "module",
   "main": "dist/index.mjs",
