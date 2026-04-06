@@ -1,3 +1,7 @@
+# 001-initial-detection-and-blocking
+
+**Status: Complete**
+
 ## Problem Statement
 
 AI models using opencode may execute bash commands with the wrong Node package manager for a project. For example, running `npm install` in a project that uses `bun`, or `yarn add` in a project that uses `pnpm`. This causes errors, conflicts with existing lockfiles, and creates confusion about which package manager the project actually uses.
