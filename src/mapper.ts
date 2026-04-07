@@ -5,8 +5,6 @@ export type MapResult =
   | { type: "rewrite"; command: string }
   | { type: "block"; reason: string };
 
-const MANAGERS = ["npm", "yarn", "pnpm", "bun"] as const;
-
 const COMMAND_ALIASES: Record<string, string> = {
   i: "install",
   add: "add",
@@ -14,9 +12,19 @@ const COMMAND_ALIASES: Record<string, string> = {
   remove: "remove",
   uninstall: "remove",
   run: "run",
-  dlx: "dlx",
-  x: "dlx",
 };
+
+const EXEC_COMMANDS: Record<string, string> = {
+  bun: "bunx",
+  npm: "npx",
+  yarn: "yarn dlx",
+  pnpm: "pnpx",
+};
+
+function buildCommand(manager: string, command: string, args: string[]): string {
+  const parts = command ? [manager, command, ...args] : [manager, ...args];
+  return parts.join(" ");
+}
 
 export function mapCommand(
   detectedManager: string,
@@ -31,61 +39,39 @@ export function mapCommand(
   const sourceCommand = normalizeCommand(parsed.command);
   const args = parsed.args;
 
-  if (sourceManager === "npm") {
-    if (sourceCommand === "npx") {
-      return { type: "rewrite", command: `${targetManager} dlx ${args.join(" ")}`.trim() };
+  if (isExecCommand(sourceCommand)) {
+    const targetExec = EXEC_COMMANDS[targetManager];
+    if (!targetExec) {
+      return { type: "block", reason: `Unsupported target manager: ${targetManager}` };
     }
-    if (sourceCommand === "install" && args.length === 0) {
-      return { type: "rewrite", command: `${targetManager} install` };
-    }
-    if (sourceCommand === "install" && args.length > 0) {
-      return { type: "rewrite", command: `${targetManager} add ${args.join(" ")}` };
-    }
-    if (sourceCommand === "add") {
-      return { type: "rewrite", command: `${targetManager} add ${args.join(" ")}` };
-    }
-    if (sourceCommand === "run") {
-      return { type: "rewrite", command: `${targetManager} run ${args.join(" ")}` };
-    }
+    return { type: "rewrite", command: buildCommand(targetExec, "", args) };
   }
 
-  if (sourceManager === "yarn") {
-    if (sourceCommand === "dlx") {
-      return { type: "rewrite", command: `${targetManager} dlx ${args.join(" ")}` };
-    }
-    if (sourceCommand === "install" && args.length === 0) {
-      return { type: "rewrite", command: `${targetManager} install` };
-    }
-    if (sourceCommand === "add") {
-      return { type: "rewrite", command: `${targetManager} add ${args.join(" ")}` };
-    }
-    if (sourceCommand === "remove") {
-      return { type: "rewrite", command: `${targetManager} remove ${args.join(" ")}` };
-    }
-    if (sourceCommand === "run") {
-      return { type: "rewrite", command: `${targetManager} run ${args.join(" ")}` };
-    }
+  if (sourceCommand === "install" && args.length === 0) {
+    return { type: "rewrite", command: `${targetManager} install` };
   }
-
-  if (sourceManager === "pnpm") {
-    if (sourceCommand === "dlx") {
-      return { type: "rewrite", command: `${targetManager} dlx ${args.join(" ")}` };
-    }
-    if (sourceCommand === "install" && args.length === 0) {
-      return { type: "rewrite", command: `${targetManager} install` };
-    }
-    if (sourceCommand === "add") {
-      return { type: "rewrite", command: `${targetManager} add ${args.join(" ")}` };
-    }
-    if (sourceCommand === "remove") {
-      return { type: "rewrite", command: `${targetManager} remove ${args.join(" ")}` };
-    }
-    if (sourceCommand === "run") {
-      return { type: "rewrite", command: `${targetManager} run ${args.join(" ")}` };
-    }
+  if (sourceCommand === "install" && args.length > 0) {
+    return { type: "rewrite", command: buildCommand(targetManager, "add", args) };
+  }
+  if (sourceCommand === "add") {
+    return { type: "rewrite", command: buildCommand(targetManager, "add", args) };
+  }
+  if (sourceCommand === "remove") {
+    return { type: "rewrite", command: buildCommand(targetManager, "remove", args) };
+  }
+  if (sourceCommand === "run") {
+    return { type: "rewrite", command: buildCommand(targetManager, "run", args) };
   }
 
   return { type: "block", reason: `Unsupported command: ${parsed.command}` };
+}
+
+function isExecCommand(command: string): boolean {
+  if (command === "npx") return true;
+  if (command === "bunx") return true;
+  if (command === "pnpx") return true;
+  if (command === "yarn dlx") return true;
+  return false;
 }
 
 function normalizeCommand(cmd: string): string {

@@ -55,9 +55,9 @@ describe("mapCommand", () => {
       expect(result).toEqual({ type: "rewrite", command: "bun add lodash" });
     });
 
-    it("rewrites npx <pkg> to bun dlx <pkg>", () => {
+    it("rewrites npx <pkg> to bunx <pkg>", () => {
       const result = mapCommand("bun", { manager: "npm", command: "npx", args: ["create-react-app"] });
-      expect(result).toEqual({ type: "rewrite", command: "bun dlx create-react-app" });
+      expect(result).toEqual({ type: "rewrite", command: "bunx create-react-app" });
     });
   });
 
@@ -76,6 +76,11 @@ describe("mapCommand", () => {
       const result = mapCommand("yarn", { manager: "npm", command: "run", args: ["build"] });
       expect(result).toEqual({ type: "rewrite", command: "yarn run build" });
     });
+
+    it("rewrites npx <pkg> to yarn dlx <pkg>", () => {
+      const result = mapCommand("yarn", { manager: "npm", command: "npx", args: ["create-react-app"] });
+      expect(result).toEqual({ type: "rewrite", command: "yarn dlx create-react-app" });
+    });
   });
 
   describe("npm to pnpm", () => {
@@ -92,6 +97,11 @@ describe("mapCommand", () => {
     it("rewrites npm run <script> to pnpm run <script>", () => {
       const result = mapCommand("pnpm", { manager: "npm", command: "run", args: ["build"] });
       expect(result).toEqual({ type: "rewrite", command: "pnpm run build" });
+    });
+
+    it("rewrites npx <pkg> to pnpx <pkg>", () => {
+      const result = mapCommand("pnpm", { manager: "npm", command: "npx", args: ["create-react-app"] });
+      expect(result).toEqual({ type: "rewrite", command: "pnpx create-react-app" });
     });
   });
 
@@ -111,9 +121,9 @@ describe("mapCommand", () => {
       expect(result).toEqual({ type: "rewrite", command: "npm run build" });
     });
 
-    it("rewrites yarn dlx <pkg> to npm dlx <pkg>", () => {
-      const result = mapCommand("npm", { manager: "yarn", command: "dlx", args: ["create-react-app"] });
-      expect(result).toEqual({ type: "rewrite", command: "npm dlx create-react-app" });
+    it("rewrites yarn dlx <pkg> to npx <pkg>", () => {
+      const result = mapCommand("npm", { manager: "yarn", command: "yarn dlx", args: ["create-react-app"] });
+      expect(result).toEqual({ type: "rewrite", command: "npx create-react-app" });
     });
   });
 
@@ -133,9 +143,9 @@ describe("mapCommand", () => {
       expect(result).toEqual({ type: "rewrite", command: "bun run build" });
     });
 
-    it("rewrites yarn dlx <pkg> to bun dlx <pkg>", () => {
-      const result = mapCommand("bun", { manager: "yarn", command: "dlx", args: ["create-react-app"] });
-      expect(result).toEqual({ type: "rewrite", command: "bun dlx create-react-app" });
+    it("rewrites yarn dlx <pkg> to bunx <pkg>", () => {
+      const result = mapCommand("bun", { manager: "yarn", command: "yarn dlx", args: ["create-react-app"] });
+      expect(result).toEqual({ type: "rewrite", command: "bunx create-react-app" });
     });
   });
 
@@ -153,6 +163,11 @@ describe("mapCommand", () => {
     it("rewrites yarn run <script> to pnpm run <script>", () => {
       const result = mapCommand("pnpm", { manager: "yarn", command: "run", args: ["build"] });
       expect(result).toEqual({ type: "rewrite", command: "pnpm run build" });
+    });
+
+    it("rewrites yarn dlx <pkg> to pnpx <pkg>", () => {
+      const result = mapCommand("pnpm", { manager: "yarn", command: "yarn dlx", args: ["create-react-app"] });
+      expect(result).toEqual({ type: "rewrite", command: "pnpx create-react-app" });
     });
   });
 
@@ -172,9 +187,9 @@ describe("mapCommand", () => {
       expect(result).toEqual({ type: "rewrite", command: "npm run build" });
     });
 
-    it("rewrites pnpm dlx <pkg> to npm dlx <pkg>", () => {
-      const result = mapCommand("npm", { manager: "pnpm", command: "dlx", args: ["create-react-app"] });
-      expect(result).toEqual({ type: "rewrite", command: "npm dlx create-react-app" });
+    it("rewrites pnpx <pkg> to npx <pkg>", () => {
+      const result = mapCommand("npm", { manager: "pnpm", command: "pnpx", args: ["create-react-app"] });
+      expect(result).toEqual({ type: "rewrite", command: "npx create-react-app" });
     });
   });
 
@@ -194,9 +209,9 @@ describe("mapCommand", () => {
       expect(result).toEqual({ type: "rewrite", command: "bun run build" });
     });
 
-    it("rewrites pnpm dlx <pkg> to bun dlx <pkg>", () => {
-      const result = mapCommand("bun", { manager: "pnpm", command: "dlx", args: ["create-react-app"] });
-      expect(result).toEqual({ type: "rewrite", command: "bun dlx create-react-app" });
+    it("rewrites pnpx <pkg> to bunx <pkg>", () => {
+      const result = mapCommand("bun", { manager: "pnpm", command: "pnpx", args: ["create-react-app"] });
+      expect(result).toEqual({ type: "rewrite", command: "bunx create-react-app" });
     });
   });
 
@@ -214,6 +229,77 @@ describe("mapCommand", () => {
     it("rewrites pnpm run <script> to yarn run <script>", () => {
       const result = mapCommand("yarn", { manager: "pnpm", command: "run", args: ["build"] });
       expect(result).toEqual({ type: "rewrite", command: "yarn run build" });
+    });
+
+    it("rewrites pnpx <pkg> to yarn dlx <pkg>", () => {
+      const result = mapCommand("yarn", { manager: "pnpm", command: "pnpx", args: ["create-react-app"] });
+      expect(result).toEqual({ type: "rewrite", command: "yarn dlx create-react-app" });
+    });
+  });
+
+  describe("bun to npm", () => {
+    it("rewrites bun install to npm install", () => {
+      const result = mapCommand("npm", { manager: "bun", command: "install", args: [] });
+      expect(result).toEqual({ type: "rewrite", command: "npm install" });
+    });
+
+    it("rewrites bun add <pkg> to npm add <pkg>", () => {
+      const result = mapCommand("npm", { manager: "bun", command: "add", args: ["lodash"] });
+      expect(result).toEqual({ type: "rewrite", command: "npm add lodash" });
+    });
+
+    it("rewrites bun run <script> to npm run <script>", () => {
+      const result = mapCommand("npm", { manager: "bun", command: "run", args: ["build"] });
+      expect(result).toEqual({ type: "rewrite", command: "npm run build" });
+    });
+
+    it("rewrites bunx <pkg> to npx <pkg>", () => {
+      const result = mapCommand("npm", { manager: "bun", command: "bunx", args: ["create-react-app"] });
+      expect(result).toEqual({ type: "rewrite", command: "npx create-react-app" });
+    });
+  });
+
+  describe("bun to yarn", () => {
+    it("rewrites bun install to yarn install", () => {
+      const result = mapCommand("yarn", { manager: "bun", command: "install", args: [] });
+      expect(result).toEqual({ type: "rewrite", command: "yarn install" });
+    });
+
+    it("rewrites bun add <pkg> to yarn add <pkg>", () => {
+      const result = mapCommand("yarn", { manager: "bun", command: "add", args: ["lodash"] });
+      expect(result).toEqual({ type: "rewrite", command: "yarn add lodash" });
+    });
+
+    it("rewrites bun run <script> to yarn run <script>", () => {
+      const result = mapCommand("yarn", { manager: "bun", command: "run", args: ["build"] });
+      expect(result).toEqual({ type: "rewrite", command: "yarn run build" });
+    });
+
+    it("rewrites bunx <pkg> to yarn dlx <pkg>", () => {
+      const result = mapCommand("yarn", { manager: "bun", command: "bunx", args: ["create-react-app"] });
+      expect(result).toEqual({ type: "rewrite", command: "yarn dlx create-react-app" });
+    });
+  });
+
+  describe("bun to pnpm", () => {
+    it("rewrites bun install to pnpm install", () => {
+      const result = mapCommand("pnpm", { manager: "bun", command: "install", args: [] });
+      expect(result).toEqual({ type: "rewrite", command: "pnpm install" });
+    });
+
+    it("rewrites bun add <pkg> to pnpm add <pkg>", () => {
+      const result = mapCommand("pnpm", { manager: "bun", command: "add", args: ["lodash"] });
+      expect(result).toEqual({ type: "rewrite", command: "pnpm add lodash" });
+    });
+
+    it("rewrites bun run <script> to pnpm run <script>", () => {
+      const result = mapCommand("pnpm", { manager: "bun", command: "run", args: ["build"] });
+      expect(result).toEqual({ type: "rewrite", command: "pnpm run build" });
+    });
+
+    it("rewrites bunx <pkg> to pnpx <pkg>", () => {
+      const result = mapCommand("pnpm", { manager: "bun", command: "bunx", args: ["create-react-app"] });
+      expect(result).toEqual({ type: "rewrite", command: "pnpx create-react-app" });
     });
   });
 
