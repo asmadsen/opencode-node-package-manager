@@ -35,12 +35,14 @@ jobs:
         with:
           node-version: 20
           registry-url: https://registry.npmjs.org
-          publish-url: https://registry.npmjs.org
+
+      - name: Bump versions and changelogs
+        run: bunx beachball publish --yes --access public --no-publish
 
       - name: Publish to npm
         if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
-        run: bunx beachball publish --yes --access public
+        run: npm publish --provenance --access public
 
       - name: Publish snapshot to npm
         if: github.event_name == 'pull_request'
-        run: bunx beachball publish --yes --access public --prerelease-prefix "snapshot"
+        run: npm publish --provenance --access public --tag snapshot
