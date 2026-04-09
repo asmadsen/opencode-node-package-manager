@@ -76,3 +76,42 @@ bun install
 bun test
 bun run build
 ```
+
+## Release Process
+
+This project uses [beachball](https://github.com/microsoft/beachball) for automated semantic versioning and changelog generation.
+
+### Creating Change Files
+
+Before submitting a PR, run:
+
+```bash
+bun run change
+```
+
+This will interactively prompt you to describe your changes. Select the appropriate change type:
+
+- **patch**: Bug fixes
+- **minor**: New features (backward compatible)
+- **major**: Breaking changes
+- **none**: Documentation-only or test-only changes
+
+### Files That Don't Require Change Files
+
+The following changes do not require change files:
+
+- README.md updates
+- Test files (*.test.ts, *.spec.ts)
+- Vitest configuration
+
+### Release Flow
+
+1. Create a change file for each PR
+2. Merge to main branch
+3. CI automatically:
+   - Calculates version bump from change files
+   - Updates CHANGELOG.md
+   - Creates git commit/tag
+   - Publishes to npm
+
+Releases can also be triggered manually via GitHub Actions workflow_dispatch.
