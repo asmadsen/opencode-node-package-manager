@@ -3,12 +3,18 @@ name: Publish to npm
 on:
   push:
     branches:
-      - main
+      - master
+  pull_request:
+    types: [labeled, synchronize, opened, reopened]
   workflow_dispatch:
 
 jobs:
   publish:
     runs-on: ubuntu-latest
+    if: >
+      github.event_name == 'push' ||
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'publish'))
     permissions:
       contents: write
       id-token: write
@@ -32,4 +38,9 @@ jobs:
           publish-url: https://registry.npmjs.org
 
       - name: Publish to npm
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
         run: bunx beachball publish --yes --access public
+
+      - name: Publish snapshot to npm
+        if: github.event_name == 'pull_request'
+        run: bunx beachball publish --yes --access public --prerelease-prefix "snapshot"
