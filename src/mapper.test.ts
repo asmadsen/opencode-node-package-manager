@@ -111,9 +111,9 @@ describe("mapCommand", () => {
       expect(result).toEqual({ type: "rewrite", command: "npm install" });
     });
 
-    it("rewrites yarn add <pkg> to npm add <pkg>", () => {
+    it("rewrites yarn add <pkg> to npm install <pkg>", () => {
       const result = mapCommand("npm", { manager: "yarn", command: "add", args: ["lodash"] });
-      expect(result).toEqual({ type: "rewrite", command: "npm add lodash" });
+      expect(result).toEqual({ type: "rewrite", command: "npm install lodash" });
     });
 
     it("rewrites yarn run <script> to npm run <script>", () => {
@@ -177,9 +177,9 @@ describe("mapCommand", () => {
       expect(result).toEqual({ type: "rewrite", command: "npm install" });
     });
 
-    it("rewrites pnpm add <pkg> to npm add <pkg>", () => {
+    it("rewrites pnpm add <pkg> to npm install <pkg>", () => {
       const result = mapCommand("npm", { manager: "pnpm", command: "add", args: ["lodash"] });
-      expect(result).toEqual({ type: "rewrite", command: "npm add lodash" });
+      expect(result).toEqual({ type: "rewrite", command: "npm install lodash" });
     });
 
     it("rewrites pnpm run <script> to npm run <script>", () => {
@@ -243,9 +243,9 @@ describe("mapCommand", () => {
       expect(result).toEqual({ type: "rewrite", command: "npm install" });
     });
 
-    it("rewrites bun add <pkg> to npm add <pkg>", () => {
+    it("rewrites bun add <pkg> to npm install <pkg>", () => {
       const result = mapCommand("npm", { manager: "bun", command: "add", args: ["lodash"] });
-      expect(result).toEqual({ type: "rewrite", command: "npm add lodash" });
+      expect(result).toEqual({ type: "rewrite", command: "npm install lodash" });
     });
 
     it("rewrites bun run <script> to npm run <script>", () => {

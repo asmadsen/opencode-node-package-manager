@@ -14,6 +14,20 @@ const COMMAND_ALIASES: Record<string, string> = {
   run: "run",
 };
 
+const ADD_COMMANDS: Record<string, string> = {
+  npm: "install",
+  yarn: "add",
+  pnpm: "add",
+  bun: "add",
+};
+
+const REMOVE_COMMANDS: Record<string, string> = {
+  npm: "uninstall",
+  yarn: "remove",
+  pnpm: "remove",
+  bun: "remove",
+};
+
 const EXEC_COMMANDS: Record<string, string> = {
   bun: "bunx",
   npm: "npx",
@@ -34,7 +48,6 @@ export function mapCommand(
     return { type: "pass" };
   }
 
-  const sourceManager = parsed.manager;
   const targetManager = detectedManager;
   const sourceCommand = normalizeCommand(parsed.command);
   const args = parsed.args;
@@ -51,13 +64,19 @@ export function mapCommand(
     return { type: "rewrite", command: `${targetManager} install` };
   }
   if (sourceCommand === "install" && args.length > 0) {
-    return { type: "rewrite", command: buildCommand(targetManager, "add", args) };
+    const addCmd = ADD_COMMANDS[targetManager];
+    if (!addCmd) return { type: "block", reason: `Unsupported target manager: ${targetManager}` };
+    return { type: "rewrite", command: buildCommand(targetManager, addCmd, args) };
   }
   if (sourceCommand === "add") {
-    return { type: "rewrite", command: buildCommand(targetManager, "add", args) };
+    const addCmd = ADD_COMMANDS[targetManager];
+    if (!addCmd) return { type: "block", reason: `Unsupported target manager: ${targetManager}` };
+    return { type: "rewrite", command: buildCommand(targetManager, addCmd, args) };
   }
   if (sourceCommand === "remove") {
-    return { type: "rewrite", command: buildCommand(targetManager, "remove", args) };
+    const rmCmd = REMOVE_COMMANDS[targetManager];
+    if (!rmCmd) return { type: "block", reason: `Unsupported target manager: ${targetManager}` };
+    return { type: "rewrite", command: buildCommand(targetManager, rmCmd, args) };
   }
   if (sourceCommand === "run") {
     return { type: "rewrite", command: buildCommand(targetManager, "run", args) };
