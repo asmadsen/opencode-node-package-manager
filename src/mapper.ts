@@ -18,7 +18,7 @@ const EXEC_COMMANDS: Record<string, string> = {
   bun: "bunx",
   npm: "npx",
   yarn: "yarn dlx",
-  pnpm: "pnpx",
+  pnpm: "pnpm dlx",
 };
 
 function buildCommand(manager: string, command: string, args: string[]): string {
